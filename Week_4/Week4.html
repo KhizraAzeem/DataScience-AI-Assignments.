@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Week 4 — Tesla Stock Visualization Dashboard · Tesla Midnight Theme</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-0:#0a0a0a;
+      --accent-red:#e82127;
+      --accent-silver:#bfc5ca;
+      --text:#ffffff;
+      --glass:rgba(255,255,255,0.04);
+      --shadow:0 6px 30px rgba(0,0,0,0.6);
+      --card-radius:14px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background:
+        radial-gradient(1200px 600px at 10% 10%, rgba(232,33,39,0.03), transparent 6%),
+        linear-gradient(120deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00) 50%, rgba(255,255,255,0.025)),
+        var(--bg-0);
+      color: var(--text);
+      padding: 48px 40px 80px;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border: 1px solid rgba(255,255,255,0.03);
+      border-radius: var(--card-radius);
+      box-shadow: var(--shadow);
+      padding: 20px 28px;
+      backdrop-filter: blur(6px);
+      margin-bottom: 36px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .brand svg { width: 48px; height: 48px; }
+
+    .brand h1 {
+      font-family: 'Orbitron', sans-serif;
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: 1px;
+    }
+
+    .brand p {
+      color: var(--accent-silver);
+      font-size: 13px;
+      margin: 2px 0 0 0;
+    }
+
+    .header-meta {
+      text-align: right;
+      color: var(--accent-silver);
+      font-size: 13px;
+      margin-top: 6px;
+    }
+
+    main.dashboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+      gap: 30px;
+      align-items: start;
+    }
+
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015));
+      border-radius: var(--card-radius);
+      border: 1px solid rgba(255,255,255,0.04);
+      box-shadow: var(--shadow);
+      padding: 20px;
+      backdrop-filter: blur(6px);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      height: fit-content;
+    }
+
+    .card h2 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 15px;
+      color: var(--accent-silver);
+      margin-bottom: 12px;
+      letter-spacing: 0.8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card h2 span {
+      display: inline-block;
+      width: 40px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent-red), #ff6b6b);
+      border-radius: 6px;
+      opacity: 0.95;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 6px;
+      font-size: 13px;
+      text-align: center;
+    }
+
+    th, td {
+      border: 1px solid rgba(255,255,255,0.05);
+      padding: 6px 8px;
+      color: var(--accent-silver);
+      vertical-align: middle;
+    }
+
+    th {
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .graph-box {
+      width: 100%;
+      border-radius: 10px;
+      overflow: hidden;
+      background: var(--glass);
+      border: 1px solid rgba(255,255,255,0.05);
+      box-shadow: inset 0 0 12px rgba(232,33,39,0.05);
+      margin-top: 10px;
+    }
+
+    .graph-box img {
+      width: 100%;
+      display: block;
+      object-fit: contain;
+    }
+
+    footer {
+      margin-top: 60px;
+      text-align: center;
+      color: var(--accent-silver);
+      font-size: 13px;
+      opacity: 0.8;
+    }
+
+    @media (max-width: 768px) {
+      body { padding: 30px 20px; }
+      .dashboard { grid-template-columns: 1fr; }
+      .card { padding: 18px; }
+      header { flex-direction: column; gap: 10px; text-align: center; }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="brand">
+      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M30 10 L70 10 L50 60 Z" fill="#e82127"/>
+      </svg>
+      <div>
+        <h1>Week 4 — Tesla Stock Dashboard</h1>
+        <p>Dataset Analysis · Correlation Insights</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="dashboard">
+
+    <!-- Dataset Overview -->
+    <div class="card">
+      <h2>Dataset Overview <span></span></h2>
+      <table>
+        <tr><th>Index</th><th>Date</th><th>Open</th><th>High</th><th>Low</th><th>Close</th><th>Volume</th></tr>
+        <tr><td>0</td><td>2015-01-02</td><td>14.858</td><td>14.883</td><td>14.217</td><td>14.621</td><td>71466000</td></tr>
+        <tr><td>1</td><td>2015-01-05</td><td>14.303</td><td>14.433</td><td>13.811</td><td>14.006</td><td>80527500</td></tr>
+        <tr><td>2</td><td>2015-01-06</td><td>14.004</td><td>14.280</td><td>13.614</td><td>14.085</td><td>93928500</td></tr>
+        <tr><td>3</td><td>2015-01-07</td><td>14.223</td><td>14.319</td><td>13.985</td><td>14.063</td><td>44526000</td></tr>
+        <tr><td>4</td><td>2015-01-08</td><td>14.187</td><td>14.253</td><td>14.001</td><td>14.041</td><td>51637500</td></tr>
+        <tr><td>5</td><td>2015-01-09</td><td>13.928</td><td>13.999</td><td>13.664</td><td>13.777</td><td>70024500</td></tr>
+      </table>
+    </div>
+
+    <!-- Correlation Matrix -->
+    <div class="card">
+      <h2>Correlation Matrix <span></span></h2>
+      <table>
+        <tr><th></th><th>Unnamed:0</th><th>Open</th><th>High</th><th>Low</th><th>Close</th><th>Volume</th></tr>
+        <tr><td>Unnamed:0</td><td>1.000</td><td>0.8219</td><td>0.8221</td><td>0.8222</td><td>0.8222</td><td>0.2134</td></tr>
+        <tr><td>Open</td><td>0.8219</td><td>1.000</td><td>0.9997</td><td>0.9995</td><td>0.9990</td><td>-0.0628</td></tr>
+        <tr><td>High</td><td>0.8221</td><td>0.9997</td><td>1.000</td><td>0.9995</td><td>0.9996</td><td>-0.0579</td></tr>
+        <tr><td>Low</td><td>0.8222</td><td>0.9995</td><td>0.9995</td><td>1.000</td><td>0.9996</td><td>-0.0674</td></tr>
+        <tr><td>Close</td><td>0.8222</td><td>0.9990</td><td>0.9996</td><td>0.9996</td><td>1.000</td><td>-0.0616</td></tr>
+        <tr><td>Volume</td><td>0.2134</td><td>-0.0628</td><td>-0.0579</td><td>-0.0674</td><td>-0.0616</td><td>1.000</td></tr>
+      </table>
+    </div>
+
+    <!-- Correlation Heatmap Graph -->
+    <div class="card">
+      <h2>Graph — Correlation Heatmap <span></span></h2>
+      <div class="graph-box">
+        <img src="graph5.png" alt="Correlation Heatmap Graph">
+      </div>
+    </div>
+
+    <!-- Top 3 Related Features -->
+    <div class="card">
+      <h2>Top 3 Features Related to Close <span></span></h2>
+      <table>
+        <tr><th>Feature</th><th>Correlation</th></tr>
+        <tr><td>Low</td><td>0.999608</td></tr>
+        <tr><td>High</td><td>0.999563</td></tr>
+        <tr><td>Open</td><td>0.999027</td></tr>
+      </table>
+    </div>
+
+  </main>
+
+  <footer>Theme: Tesla Midnight · Week 4 Dashboard · Correlation & Feature Analysis</footer>
+</body>
+</html>
+
+
+
+
