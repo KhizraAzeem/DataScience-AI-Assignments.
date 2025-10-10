@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Week 3 — Tesla Stock Visualization Report · Tesla Midnight Theme</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg-0:#0a0a0a;
+      --bg-1:#0f0f10;
+      --accent-red:#e82127;
+      --accent-silver:#bfc5ca;
+      --muted:rgba(191,197,202,0.10);
+      --glass:rgba(255,255,255,0.03);
+      --text:#ffffff;
+      --mono:"Orbitron", "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+      --ui:"Poppins", system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+      --card-radius:12px;
+      --shadow:0 8px 40px rgba(0,0,0,0.6);
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      min-height:100%;
+      font-family:var(--ui);
+      color:var(--text);
+      background:
+        radial-gradient(1200px 500px at 8% 12%, rgba(232,33,39,0.02), transparent 6%),
+        linear-gradient(120deg, rgba(255,255,255,0.01) 0%, rgba(255,255,255,0.00) 50%, rgba(255,255,255,0.02) 100%),
+        var(--bg-0);
+      padding:36px;
+      overflow-y:auto;
+    }
+
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      background:linear-gradient(90deg, rgba(232,33,39,0.02), rgba(191,197,202,0.01), rgba(232,33,39,0.02));
+      mix-blend-mode:overlay;
+      opacity:0.65;
+      filter: blur(28px);
+      pointer-events:none;
+      animation: streak 14s linear infinite;
+      z-index:0;
+    }
+    @keyframes streak{0%{transform:translateX(-22%)}50%{transform:translateX(22%)}100%{transform:translateX(-22%)}}
+
+    .watermark{
+      position:fixed;
+      left:50%;
+      top:50%;
+      transform:translate(-50%,-50%) scale(1.5);
+      width:700px;
+      height:700px;
+      opacity:0.05;
+      filter: blur(25px);
+      pointer-events:none;
+      z-index:0;
+      mix-blend-mode:soft-light;
+    }
+
+    .container{
+      position:relative;
+      z-index:1;
+      max-width:1200px;
+      margin:0 auto;
+      display:grid;
+      grid-template-columns: 1fr 380px;
+      gap:20px;
+      align-items:start;
+    }
+
+    header{
+      grid-column:1 / -1;
+      display:flex;
+      gap:16px;
+      align-items:center;
+      padding:16px 18px;
+      border-radius:var(--card-radius);
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00));
+      border:1px solid rgba(255,255,255,0.03);
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(6px);
+    }
+
+    .brand{display:flex;gap:14px;align-items:center}
+    .brand .mark{width:56px;height:56px;display:grid;place-items:center;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00));border:1px solid rgba(255,255,255,0.028);}
+    .brand h1{margin:0;font-family:var(--mono);font-weight:700;font-size:20px;letter-spacing:0.6px}
+    .brand p{margin:0;color:var(--accent-silver);font-size:13px;margin-top:3px}
+
+    .section-title{display:flex;align-items:center;gap:10px;margin:0 0 12px 0;font-family:var(--mono);font-size:14px;color:var(--accent-silver);letter-spacing:0.6px}
+    .section-title .accent{width:38px;height:4px;border-radius:6px;background:linear-gradient(90deg,var(--accent-red),#ff6b6b)}
+
+    .panel{
+      background:linear-gradient(180deg,rgba(255,255,255,0.015),rgba(255,255,255,0.01));
+      padding:18px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,0.03);
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(6px);
+      margin-bottom:20px;
+    }
+
+    img.graph{
+      width:100%;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,0.04);
+      margin-bottom:12px;
+      box-shadow:0 0 18px rgba(232,33,39,0.05);
+    }
+
+    aside.sidebar{display:flex;flex-direction:column;gap:18px;align-self:start}
+    .meta{padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);background:linear-gradient(180deg,rgba(255,255,255,0.015),rgba(255,255,255,0.01));}
+    .meta h3{margin:0 0 8px 0;font-family:var(--mono);color:var(--accent-silver);font-size:13px}
+    .meta p{margin:0;font-size:13px;color:var(--text);line-height:1.6}
+
+    .note{grid-column:1 / -1;color:var(--accent-silver);font-size:13px;text-align:right;margin-top:6px}
+
+    @media (max-width:1000px){
+      .container{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <svg class="watermark" viewBox="0 0 100 100" aria-hidden="true">
+    <defs>
+      <linearGradient id="wmg" x1="0" x2="1">
+        <stop offset="0" stop-color="#e82127" stop-opacity="0.12"/>
+        <stop offset="1" stop-color="#bfc5ca" stop-opacity="0.06"/>
+      </linearGradient>
+    </defs>
+    <g transform="translate(10,6) scale(0.8)">
+      <path d="M45 8 L55 8 L50 44 L30 44 L45 8 Z" fill="url(#wmg)" />
+      <ellipse cx="50" cy="65" rx="28" ry="15" fill="url(#wmg)" opacity="0.85"/>
+    </g>
+  </svg>
+
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="mark">
+          <svg width="28" height="28" viewBox="0 0 100 100" fill="none">
+            <path d="M30 10 L70 10 L50 60 Z" fill="#e82127"/>
+          </svg>
+        </div>
+        <div>
+          <h1>Week 3 — Tesla Stock Visualization Report</h1>
+          <p>Comprehensive Graphical Analysis of Tesla Stock Data</p>
+        </div>
+      </div>
+    </header>
+
+    <section>
+      <div class="panel">
+        <h3 class="section-title">📈 Graph 1: Stock Price Over Time <span class="accent"></span></h3>
+        <img src="graph1.png" alt="Stock price trend" class="graph">
+        <p>Shows Tesla’s daily closing prices across the dataset, capturing overall upward growth with key volatility periods highlighted.</p>
+      </div>
+
+      <div class="panel">
+        <h3 class="section-title">📊 Graph 2: Volume Analysis <span class="accent"></span></h3>
+        <img src="graph2.png" alt="Volume trend" class="graph">
+        <p>Trading volume over time highlights investor interest spikes during significant Tesla announcements and earnings reports.</p>
+      </div>
+
+      <div class="panel">
+        <h3 class="section-title">📉 Graph 3: Moving Averages (MA7 vs MA30) <span class="accent"></span></h3>
+        <img src="graph3.png" alt="Moving averages comparison" class="graph">
+        <p>Compares short-term (7-day) and long-term (30-day) moving averages. Crossover points serve as early signals for momentum shifts.</p>
+      </div>
+
+      <div class="panel">
+        <h3 class="section-title">🌡️ Graph 4: Correlation Heatmap <span class="accent"></span></h3>
+        <img src="graph4.png" alt="Correlation heatmap" class="graph">
+        <p>Displays correlations between stock features such as Open, Close, High, Low, and Volume — helping identify the strongest predictors.</p>
+      </div>
+
+      <div class="panel">
+        <h3 class="section-title">📦 Graph 5: Dataset Overview Table <span class="accent"></span></h3>
+        <img src="graph5.png" alt="Dataset overview" class="graph">
+        <p>Summarizes key dataset attributes including date range, feature columns, and sample entries. Forms the basis for visualization analysis.</p>
+      </div>
+    </section>
+
+    <aside class="sidebar">
+      <div class="meta">
+        <h3>Insights</h3>
+        <p>Tesla’s upward trend aligns with major product releases and market expansions. Volume surges often occur before strong price movements, signaling investor sentiment.</p>
+      </div>
+
+      <div class="meta">
+        <h3>Tools Used</h3>
+        <p>Python, Pandas, Matplotlib, Seaborn, and Plotly for visualization and trend analysis.</p>
+      </div>
+
+      <div class="meta">
+        <h3>Learning Outcome</h3>
+        <p>Enhanced ability to interpret complex financial datasets, recognize correlations, and communicate findings visually with professional clarity.</p>
+      </div>
+    </aside>
+
+    <div class="note">Week 3 Assignment | Tesla Stock Forecasting | Visualization & Analysis</div>
+  </div>
+</body>
+</html>
+
+
+
+
