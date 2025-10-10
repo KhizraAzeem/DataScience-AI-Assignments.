@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Tesla Stock — "Tesla Midnight" Theme</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+
+    :root{
+      --bg-0: #0a0a0a;
+      --bg-1: #0f0f10;
+      --accent-red: #e82127;
+      --accent-silver: #bfc5ca;
+      --muted: rgba(191,197,202,0.12);
+      --glass: rgba(255,255,255,0.04);
+      --glass-2: rgba(255,255,255,0.02);
+      --text: #ffffff;
+      --mono: 'Orbitron', 'Poppins', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      --ui: 'Poppins', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      --card-radius: 12px;
+      --shadow: 0 6px 30px rgba(0,0,0,0.6);
+    }
+
+    /* page layout */
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      min-height:100%;
+      font-family: var(--ui);
+      background:
+        radial-gradient(1200px 600px at 10% 10%, rgba(232,33,39,0.02), transparent 6%),
+        linear-gradient(120deg, rgba(255,255,255,0.01) 0%, rgba(255,255,255,0.00) 50%, rgba(255,255,255,0.025) 100%),
+        var(--bg-0);
+      color:var(--text);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      padding:48px;
+      overflow-y:auto;
+    }
+
+    /* faint animated streaks to mimic Tesla dashboard lighting */
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      background:
+        linear-gradient(90deg, rgba(232,33,39,0.02), rgba(191,197,202,0.01), rgba(232,33,39,0.02));
+      mix-blend-mode:overlay;
+      opacity:0.6;
+      transform:translateZ(0);
+      pointer-events:none;
+      filter: blur(30px);
+      animation: streak 12s linear infinite;
+    }
+    @keyframes streak{
+      0%{transform:translateX(-20%)}
+      50%{transform:translateX(20%)}
+      100%{transform:translateX(-20%)}
+    }
+
+    /* Center blurred Tesla badge watermark (SVG) */
+    .watermark{
+      position:fixed;
+      left:50%;
+      top:50%;
+      transform:translate(-50%,-50%) scale(1.6);
+      width:720px;
+      height:720px;
+      opacity:0.06;
+      filter: blur(30px) saturate(70%);
+      pointer-events:none;
+      z-index:0;
+      mix-blend-mode:soft-light;
+    }
+
+    /* container */
+    .app{
+      position:relative;
+      z-index:1;
+      max-width:1200px;
+      margin:0 auto;
+      display:grid;
+      gap:20px;
+      grid-template-columns: 1fr 420px;
+      align-items:start;
+    }
+
+    header{
+      grid-column:1 / -1;
+      display:flex;
+      gap:18px;
+      align-items:center;
+      padding:18px 20px;
+      border-radius:var(--card-radius);
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      box-shadow:var(--shadow);
+      border:1px solid rgba(255,255,255,0.03);
+      backdrop-filter: blur(6px);
+    }
+
+    .brand{
+      display:flex;
+      gap:14px;
+      align-items:center;
+    }
+    .brand .mark{
+      width:56px;
+      height:56px;
+      display:grid;
+      place-items:center;
+      border-radius:10px;
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00));
+      border:1px solid rgba(255,255,255,0.028);
+      box-shadow: 0 4px 18px rgba(232,33,39,0.06) inset;
+    }
+    .brand h1{
+      margin:0;
+      font-family:var(--mono);
+      font-weight:700;
+      letter-spacing:0.6px;
+      font-size:20px;
+      color:var(--text);
+    }
+    .brand p{
+      margin:0;
+      color:var(--accent-silver);
+      font-size:12.5px;
+      margin-top:2px;
+    }
+
+    /* layouts */
+    .main-card{
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:var(--card-radius);
+      padding:18px;
+      box-shadow:var(--shadow);
+      border:1px solid rgba(255,255,255,0.03);
+      backdrop-filter: blur(6px);
+    }
+
+    /* table styles */
+    .table-wrap{
+      overflow:auto;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,0.04);
+      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));
+      padding:12px;
+    }
+
+    table{
+      border-collapse:collapse;
+      width:100%;
+      min-width:760px;
+      font-family:var(--ui);
+      color:var(--text);
+      font-size:13.5px;
+    }
+
+    thead th{
+      text-align:left;
+      font-family:var(--mono);
+      font-weight:600;
+      font-size:12px;
+      color:var(--accent-silver);
+      padding:10px 12px;
+      letter-spacing:0.6px;
+      border-bottom:1px solid rgba(255,255,255,0.03);
+      position:sticky;
+      top:0;
+      background:linear-gradient(180deg, rgba(10,10,10,0.6), rgba(10,10,10,0.4));
+      backdrop-filter: blur(6px);
+      z-index:2;
+    }
+
+    tbody td{
+      padding:10px 12px;
+      border-bottom:1px dashed rgba(255,255,255,0.03);
+      color:rgba(255,255,255,0.92);
+    }
+
+    tbody tr:hover td{
+      background: linear-gradient(90deg, rgba(232,33,39,0.02), rgba(158, 37, 37, 0.02));
+      transform:translateZ(0);
+    }
+
+    /* numeric columns styling */
+    td.num{
+      font-variant-numeric: tabular-nums;
+      text-align:right;
+      color: #e8e9ea;
+    }
+
+    /* right side column (summary cards) */
+    .side{
+      display:flex;
+      flex-direction:column;
+      gap:20px;
+    }
+
+    .meta{
+      padding:14px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,0.03);
+      background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));
+    }
+    .meta h3{
+      margin:0 0 10px 0;
+      font-family:var(--mono);
+      font-size:14px;
+      color:var(--accent-silver);
+      letter-spacing:0.6px;
+    }
+    .meta pre{
+      margin:0;
+      white-space:pre-wrap;
+      font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace;
+      background:transparent;
+      color:var(--text);
+      font-size:13px;
+      line-height:1.4;
+    }
+
+    .stats-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:12px;
+      margin-top:8px;
+    }
+
+    .stat{
+      border-radius:10px;
+      padding:12px;
+      background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));
+      border:1px solid rgba(255,255,255,0.03);
+    }
+    .stat small{
+      display:block;
+      color:var(--accent-silver);
+      font-size:11px;
+      margin-bottom:6px;
+      font-family:var(--mono);
+    }
+    .stat strong{
+      display:block;
+      font-size:16px;
+      color:var(--text);
+      font-weight:600;
+    }
+
+    /* columns pill list */
+    .pill-list{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:8px;
+    }
+    .pill{
+      font-size:12px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,0.03);
+      background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));
+      color:var(--accent-silver);
+      font-family:var(--mono);
+    }
+
+    /* footer note */
+    .note{
+      grid-column:1 / -1;
+      color:var(--accent-silver);
+      font-size:13px;
+      text-align:right;
+      margin-top:6px;
+    }
+
+    /* responsive */
+    @media (max-width:980px){
+      .app{grid-template-columns:1fr;}
+      .watermark{width:520px;height:520px;opacity:0.04}
+    }
+    @media (max-width:620px){
+      header{flex-direction:column;align-items:flex-start}
+      .brand h1{font-size:18px}
+      .table-wrap{padding:8px}
+      table{font-size:13px; min-width:640px}
+    }
+
+    /* small accent underline for headings */
+    h2.section-title{
+      font-family:var(--mono);
+      font-size:14px;
+      margin:0 0 10px 0;
+      color:var(--accent-silver);
+      letter-spacing:0.6px;
+    }
+    h2.section-title span{
+      display:inline-block;
+      width:36px;
+      height:4px;
+      background:linear-gradient(90deg,var(--accent-red), #ff6b6b);
+      border-radius:6px;
+      margin-left:12px;
+      vertical-align:middle;
+      opacity:0.95;
+    }
+
+    /* subtle chrome-like highlight on header right */
+    .header-meta{
+      margin-left:auto;
+      text-align:right;
+      color:var(--accent-silver);
+      font-size:13px;
+    }
+    .header-meta .date{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace;
+      font-size:12px;
+      color:var(--accent-silver);
+    }
+
+    /* interactive CSV download button */
+    .download-btn{
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      padding:8px 12px;
+      background:transparent;
+      border:1px solid rgba(255,255,255,0.06);
+      color:var(--text);
+      font-size:13px;
+      border-radius:10px;
+      text-decoration:none;
+      transition:all .18s ease;
+    }
+    .download-btn:hover{
+      transform:translateY(-3px);
+      box-shadow: 0 10px 30px rgba(232,33,39,0.06);
+      border-color: rgba(232,33,39,0.45);
+    }
+    .download-btn i{
+      display:inline-block;
+      width:10px;height:10px;
+      background:var(--accent-red);
+      border-radius:2px;
+      box-shadow: 0 2px 8px rgba(232,33,39,0.2);
+    }
+
+  </style>
+</head>
+<body>
+  <!-- blurred Tesla mark SVG watermark -->
+  <svg class="watermark" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+    <defs>
+      <linearGradient id="g1" x1="0" x2="1">
+        <stop offset="0" stop-color="#e82127" stop-opacity="0.12"/>
+        <stop offset="1" stop-color="#bfc5ca" stop-opacity="0.06"/>
+      </linearGradient>
+    </defs>
+    <!-- stylized minimal T-mark (not trademarked detailed logo) -->
+    <g transform="translate(10,6) scale(0.8)">
+      <path d="M45 8 L55 8 L50 44 L30 44 L45 8 Z" fill="url(#g1)" />
+      <ellipse cx="50" cy="65" rx="28" ry="15" fill="url(#g1)" opacity="0.8"/>
+    </g>
+  </svg>
+
+  <div class="app" role="main">
+    <header>
+      <div class="brand">
+        <div class="mark" aria-hidden="true">
+          <!-- tiny mark -->
+          <svg width="28" height="28" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M30 10 L70 10 L50 60 Z" fill="#e82127"/>
+          </svg>
+        </div>
+        <div>
+          <h1>Tesla Stock Dataset</h1>
+          <p>Dataset preview ·</p>
+        </div>
+      </div>
+    </header>
+
+    <!-- Left column: table & dataset text -->
+    <section class="main-card" aria-label="First ten rows and dataset info">
+      <h2 class="section-title">First 10 rows <span></span></h2>
+
+      <div class="table-wrap" role="table" aria-label="First 10 rows of Tesla stock dataset">
+        <table>
+          <thead>
+            <tr>
+              <th>Index</th>
+              <th>Date</th>
+              <th class="num">Open</th>
+              <th class="num">High</th>
+              <th class="num">Low</th>
+              <th class="num">Close</th>
+              <th class="num">Volume</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>0</td><td>2015-01-02</td><td class="num">14.858000</td><td class="num">14.883333</td><td class="num">14.217333</td><td class="num">14.620667</td><td class="num">71,466,000</td></tr>
+            <tr><td>1</td><td>2015-01-05</td><td class="num">14.303333</td><td class="num">14.433333</td><td class="num">13.810667</td><td class="num">14.006000</td><td class="num">80,527,500</td></tr>
+            <tr><td>2</td><td>2015-01-06</td><td class="num">14.004000</td><td class="num">14.280000</td><td class="num">13.614000</td><td class="num">14.085333</td><td class="num">93,928,500</td></tr>
+            <tr><td>3</td><td>2015-01-07</td><td class="num">14.223333</td><td class="num">14.318667</td><td class="num">13.985333</td><td class="num">14.063333</td><td class="num">44,526,000</td></tr>
+            <tr><td>4</td><td>2015-01-08</td><td class="num">14.187333</td><td class="num">14.253333</td><td class="num">14.000667</td><td class="num">14.041333</td><td class="num">51,637,500</td></tr>
+            <tr><td>5</td><td>2015-01-09</td><td class="num">13.928000</td><td class="num">13.998667</td><td class="num">13.664000</td><td class="num">13.777333</td><td class="num">70,024,500</td></tr>
+            <tr><td>6</td><td>2015-01-12</td><td class="num">13.536667</td><td class="num">13.631333</td><td class="num">13.283333</td><td class="num">13.480667</td><td class="num">89,254,500</td></tr>
+            <tr><td>7</td><td>2015-01-13</td><td class="num">13.554667</td><td class="num">13.840667</td><td class="num">13.394000</td><td class="num">13.616667</td><td class="num">67,159,500</td></tr>
+            <tr><td>8</td><td>2015-01-14</td><td class="num">12.388667</td><td class="num">13.013333</td><td class="num">12.333333</td><td class="num">12.846000</td><td class="num">173,278,500</td></tr>
+            <tr><td>9</td><td>2015-01-15</td><td class="num">12.966000</td><td class="num">13.050000</td><td class="num">12.666667</td><td class="num">12.791333</td><td class="num">78,247,500</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="height:12px"></div>
+
+      <h2 class="section-title">Dataset Information <span></span></h2>
+      <div class="meta" aria-label="Dataset info">
+        <pre>
+&lt;class 'pandas.core.frame.DataFrame'&gt;
+RangeIndex: 2274 entries, 0 to 2273
+Data columns (total 7 columns):
+ #   Column      Non-Null Count  Dtype
+ ---  ------      --------------  -----
+ 0   Unnamed: 0  2274 non-null    int64
+ 1   Date        2274 non-null    object
+ 2   Open        2274 non-null    float64
+ 3   High        2274 non-null    float64
+ 4   Low         2274 non-null    float64
+ 5   Close       2274 non-null    float64
+ 6   Volume      2274 non-null    int64
+dtypes: float64(4), int64(2), object(1)
+memory usage: 124.5+ KB
+        </pre>
+      </div>
+    </section>
+
+    <!-- Right column: summary & stats -->
+    <aside class="side" aria-label="Dataset summary">
+      <div class="main-card meta" style="padding-bottom:14px">
+        <h3>Summary statistics</h3>
+
+        <div class="stat" style="margin-bottom:10px">
+          <small>Rows</small>
+          <strong>2274</strong>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat">
+            <small>Open — mean</small>
+            <strong>103.49</strong>
+          </div>
+          <div class="stat">
+            <small>Close — mean</small>
+            <strong>103.46</strong>
+          </div>
+          <div class="stat">
+            <small>High — max</small>
+            <strong>414.50</strong>
+          </div>
+          <div class="stat">
+            <small>Low — min</small>
+            <strong>9.40</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="main-card meta">
+        <h3>Columns</h3>
+        <div class="pill-list" role="list">
+          <div class="pill">Unnamed: 0</div>
+          <div class="pill">Date</div>
+          <div class="pill">Open</div>
+          <div class="pill">High</div>
+          <div class="pill">Low</div>
+          <div class="pill">Close</div>
+          <div class="pill">Volume</div>
+        </div>
+      </div>
+
+      <div class="main-card meta" style="display:flex;flex-direction:column;gap:10px;">
+        <h3>Descriptive summary (excerpt)</h3>
+        <pre>
+count   2274.0
+mean    103.49
+std     111.13
+min      9.49
+25%     16.67
+50%     23.22
+75%    215.27
+max    411.47
+        </pre>
+      </div>
+    </aside>
+
+    <div class="note">Week 1 Assignment | Stock Forecasting Project |</div>
+  </div>
+</body>
+</html>
+
+
