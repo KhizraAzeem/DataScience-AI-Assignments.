@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Tesla Stock — Cleaning Report · Tesla Midnight Theme</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+    
+
+    :root{
+      --bg-0:#0a0a0a;
+      --bg-1:#0f0f10;
+      --accent-red:#e82127;
+      --accent-silver:#bfc5ca;
+      --muted:rgba(191,197,202,0.10);
+      --glass:rgba(255,255,255,0.03);
+      --text:#ffffff;
+      --mono:"Orbitron", "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+      --ui:"Poppins", system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+      --card-radius:12px;
+      --shadow:0 8px 40px rgba(0,0,0,0.6);
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      min-height:100%;
+      font-family:var(--ui);
+      color:var(--text);
+      background:
+        radial-gradient(1200px 500px at 8% 12%, rgba(232,33,39,0.02), transparent 6%),
+        linear-gradient(120deg, rgba(255,255,255,0.01) 0%, rgba(255,255,255,0.00) 50%, rgba(255,255,255,0.02) 100%),
+        var(--bg-0);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      padding:36px;
+      overflow-y:auto;
+    }
+
+    /* animated subtle streak overlay to mimic dashboard lighting */
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      background:
+        linear-gradient(90deg, rgba(232,33,39,0.02), rgba(191,197,202,0.01), rgba(232,33,39,0.02));
+      mix-blend-mode:overlay;
+      opacity:0.65;
+      filter: blur(28px);
+      pointer-events:none;
+      transform:translateZ(0);
+      animation: streak 14s linear infinite;
+      z-index:0;
+    }
+    @keyframes streak{
+      0%{transform:translateX(-22%)}
+      50%{transform:translateX(22%)}
+      100%{transform:translateX(-22%)}
+    }
+
+    /* blurred watermark (center) */
+    .watermark{
+      position:fixed;
+      left:50%;
+      top:50%;
+      transform:translate(-50%,-50%) scale(1.6);
+      width:720px;
+      height:720px;
+      opacity:0.055;
+      filter: blur(28px) saturate(70%);
+      pointer-events:none;
+      z-index:0;
+      mix-blend-mode:soft-light;
+    }
+
+    .container{
+      position:relative;
+      z-index:1;
+      max-width:1200px;
+      margin:0 auto;
+      display:grid;
+      grid-template-columns: 1fr 380px;
+      gap:20px;
+      align-items:start;
+    }
+
+    header{
+      grid-column:1 / -1;
+      display:flex;
+      gap:16px;
+      align-items:center;
+      padding:16px 18px;
+      border-radius:var(--card-radius);
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00));
+      border:1px solid rgba(255,255,255,0.03);
+      box-shadow:var(--shadow);
+      backdrop-filter: blur(6px);
+    }
+
+    .brand{
+      display:flex;
+      gap:14px;
+      align-items:center;
+    }
+    .brand .mark{
+      width:56px;height:56px;
+      display:grid;place-items:center;
+      border-radius:10px;
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00));
+      border:1px solid rgba(255,255,255,0.028);
+    }
+    .brand h1{
+      margin:0;
+      font-family:var(--mono);
+      font-weight:700;
+      font-size:20px;
+      letter-spacing:0.6px;
+    }
+    .brand p{margin:0;color:var(--accent-silver);font-size:13px;margin-top:3px}
+
+    .header-meta{margin-left:auto;text-align:right;color:var(--accent-silver);font-size:13px}
+    .header-meta .date{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace;font-size:12px;color:var(--accent-silver)}
+
+    .download-btn{
+      display:inline-flex;gap:8px;align-items:center;padding:8px 12px;background:transparent;border:1px solid rgba(255,255,255,0.06);
+      color:var(--text);font-size:13px;border-radius:10px;text-decoration:none;transition:all .18s ease;
+    }
+    .download-btn:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(232,33,39,0.06);border-color: rgba(232,33,39,0.45)}
+    .download-btn i{display:inline-block;width:10px;height:10px;background:var(--accent-red);border-radius:2px;box-shadow:0 2px 8px rgba(232,33,39,0.18)}
+
+    /* left main panel styles */
+    .panel{
+      background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));
+      padding:16px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,0.03);
+      box-shadow:var(--shadow);
+      backdrop-filter: blur(6px);
+    }
+
+    /* headings */
+    .section-title{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin:0 0 12px 0;
+      font-family:var(--mono);
+      font-size:14px;
+      color:var(--accent-silver);
+      letter-spacing:0.6px;
+    }
+    .section-title .accent{
+      width:38px;height:4px;border-radius:6px;background:linear-gradient(90deg,var(--accent-red), #ff6b6b);
+      display:inline-block;
+    }
+
+    /* compact monospaced blocks for raw outputs */
+    pre.terminal{
+      margin:0;
+      padding:12px;
+      border-radius:10px;
+      background:linear-gradient(180deg, rgba(0,0,0,0.45), rgba(255,255,255,0.02));
+      color:var(--text);
+      font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace;
+      font-size:13px;
+      line-height:1.45;
+      border:1px solid rgba(255,255,255,0.03);
+      overflow:auto;
+      max-height:220px;
+    }
+
+    /* table for first 10 rows */
+    .table-wrap{
+      margin-top:10px;
+      border-radius:10px;
+      overflow:auto;
+      border:1px solid rgba(255,255,255,0.03);
+      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));
+      padding:10px;
+    }
+
+    table{
+      border-collapse:collapse;
+      width:100%;
+      min-width:840px;
+      color:var(--text);
+      font-size:13.5px;
+    }
+    thead th{
+      text-align:left;
+      padding:10px 12px;
+      font-family:var(--mono);
+      color:var(--accent-silver);
+      font-size:12px;
+      border-bottom:1px solid rgba(255,255,255,0.03);
+      position:sticky; top:0; background:rgba(10,10,10,0.6);backdrop-filter: blur(4px);
+      z-index:2;
+    }
+    tbody td{
+      padding:10px 12px;
+      border-bottom:1px dashed rgba(255,255,255,0.03);
+      color:rgba(255,255,255,0.92);
+    }
+    td.num{ text-align:right; font-variant-numeric:tabular-nums; color:#e8e9ea }
+
+    tbody tr:hover td{
+      background: linear-gradient(90deg, rgba(232,33,39,0.02), rgba(255,255,255,0.02));
+    }
+
+    /* right column (sidebar) */
+    aside.sidebar{ display:flex; flex-direction:column; gap:18px; align-self:start }
+    .meta{ padding:14px; border-radius:12px; border:1px solid rgba(255,255,255,0.03); background:linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01)); }
+    .meta h3{ margin:0 0 8px 0; font-family:var(--mono); color:var(--accent-silver); font-size:13px }
+    .meta pre{ margin:0; font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace; font-size:13px; color:var(--text); white-space:pre-wrap }
+
+    .stats-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-top:8px }
+    .stat{ padding:12px; border-radius:10px; border:1px solid rgba(255,255,255,0.03); background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00)); }
+    .stat small{ display:block; color:var(--accent-silver); font-family:var(--mono); font-size:11px; margin-bottom:6px }
+    .stat strong{ display:block; color:var(--text); font-size:16px; font-weight:700 }
+
+    .pill-list{ display:flex; gap:8px; flex-wrap:wrap; margin-top:8px }
+    .pill{ font-size:12px; padding:6px 10px; border-radius:999px; border:1px solid rgba(255,255,255,0.03); color:var(--accent-silver); font-family:var(--mono) }
+
+    .note{ grid-column:1 / -1; color:var(--accent-silver); font-size:13px; text-align:right; margin-top:6px }
+
+    /* responsive */
+    @media (max-width:1000px){
+      .container{ grid-template-columns: 1fr; padding-bottom:30px }
+      .watermark{ transform:translate(-50%,-50%) scale(1.2); width:520px; height:520px; opacity:0.045 }
+      table{ min-width:720px }
+    }
+    @media (max-width:640px){
+      header{flex-direction:column;align-items:flex-start}
+      table{ min-width:640px; font-size:13px }
+    }
+
+  </style>
+</head>
+<body>
+  <!-- watermark (stylized, non-branded mark) -->
+  <svg class="watermark" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+    <defs>
+      <linearGradient id="wmg" x1="0" x2="1">
+        <stop offset="0" stop-color="#e82127" stop-opacity="0.12"/>
+        <stop offset="1" stop-color="#bfc5ca" stop-opacity="0.06"/>
+      </linearGradient>
+    </defs>
+    <g transform="translate(10,6) scale(0.8)">
+      <path d="M45 8 L55 8 L50 44 L30 44 L45 8 Z" fill="url(#wmg)" />
+      <ellipse cx="50" cy="65" rx="28" ry="15" fill="url(#wmg)" opacity="0.85"/>
+    </g>
+  </svg>
+
+  <div class="container" role="main">
+    <header>
+      <div class="brand" aria-hidden="true">
+        <div class="mark">
+          <svg width="28" height="28" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M30 10 L70 10 L50 60 Z" fill="#e82127"/>
+          </svg>
+        </div>
+        <div>
+          <h1>Tesla Stock — Cleaning Report</h1>
+          <p>Before & After cleaning · </p>
+        </div>
+      </div>
+    </header>
+
+    <!-- LEFT: Detailed outputs -->
+    <section class="panel" aria-label="Before cleaning">
+      <h3 class="section-title">📊 BEFORE CLEANING <span class="accent" aria-hidden="true"></span></h3>
+
+      <pre class="terminal" aria-label="Before cleaning summary">
+============================================================
+Shape: (2274, 7)
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 2274 entries, 0 to 2273
+Data columns (total 7 columns):
+ #   Column      Non-Null Count  Dtype  
+---  ------      --------------  -----  
+ 0   Unnamed: 0  2274 non-null   int64  
+ 1   Date        2274 non-null   object 
+ 2   Open        2274 non-null   float64
+ 3   High        2274 non-null   float64
+ 4   Low         2274 non-null   float64
+ 5   Close       2274 non-null   float64
+ 6   Volume      2274 non-null   int64  
+dtypes: float64(4), int64(2), object(1)
+memory usage: 124.5+ KB
+
+Missing Values Before Cleaning:
+Unnamed: 0    0
+Date          0
+Open          0
+High          0
+Low           0
+Close         0
+Volume        0
+dtype: int64
+      </pre>
+
+      <div style="height:10px"></div>
+
+      <h4 class="section-title" style="font-size:13px;margin-top:6px">First 10 Rows (Before Cleaning) <span class="accent" aria-hidden="true"></span></h4>
+      <div class="table-wrap" role="table" aria-label="First ten rows before cleaning">
+        <table>
+          <thead>
+            <tr>
+              <th>Index</th><th>Date</th><th class="num">Open</th><th class="num">High</th><th class="num">Low</th><th class="num">Close</th><th class="num">Volume</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>0</td><td>2015-01-02</td><td class="num">14.858000</td><td class="num">14.883333</td><td class="num">14.217333</td><td class="num">14.620667</td><td class="num">71,466,000</td></tr>
+            <tr><td>1</td><td>2015-01-05</td><td class="num">14.303333</td><td class="num">14.433333</td><td class="num">13.810667</td><td class="num">14.006000</td><td class="num">80,527,500</td></tr>
+            <tr><td>2</td><td>2015-01-06</td><td class="num">14.004000</td><td class="num">14.280000</td><td class="num">13.614000</td><td class="num">14.085333</td><td class="num">93,928,500</td></tr>
+            <tr><td>3</td><td>2015-01-07</td><td class="num">14.223333</td><td class="num">14.318667</td><td class="num">13.985333</td><td class="num">14.063333</td><td class="num">44,526,000</td></tr>
+            <tr><td>4</td><td>2015-01-08</td><td class="num">14.187333</td><td class="num">14.253333</td><td class="num">14.000667</td><td class="num">14.041333</td><td class="num">51,637,500</td></tr>
+            <tr><td>5</td><td>2015-01-09</td><td class="num">13.928000</td><td class="num">13.998667</td><td class="num">13.664000</td><td class="num">13.777333</td><td class="num">70,024,500</td></tr>
+            <tr><td>6</td><td>2015-01-12</td><td class="num">13.536667</td><td class="num">13.631333</td><td class="num">13.283333</td><td class="num">13.480667</td><td class="num">89,254,500</td></tr>
+            <tr><td>7</td><td>2015-01-13</td><td class="num">13.554667</td><td class="num">13.840667</td><td class="num">13.394000</td><td class="num">13.616667</td><td class="num">67,159,500</td></tr>
+            <tr><td>8</td><td>2015-01-14</td><td class="num">12.388667</td><td class="num">13.013333</td><td class="num">12.333333</td><td class="num">12.846000</td><td class="num">173,278,500</td></tr>
+            <tr><td>9</td><td>2015-01-15</td><td class="num">12.966000</td><td class="num">13.050000</td><td class="num">12.666667</td><td class="num">12.791333</td><td class="num">78,247,500</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- RIGHT: Summary & AFTER cleaning -->
+    <aside class="sidebar" aria-label="Summary and after cleaning">
+      <div class="meta" aria-label="Dataset stats before/after">
+        <h3>Key statistics (excerpt)</h3>
+        <pre>
+count   2274.000000
+mean    103.493730 (Open)
+std     111.136174
+min      9.488000
+25%     16.669833
+50%     23.221334
+75%    215.272503
+max    411.470001
+        </pre>
+      </div>
+
+      <div class="meta" aria-label="After cleaning">
+        <h3 class="section-title" style="margin-bottom:8px">✅ AFTER CLEANING <span class="accent" aria-hidden="true"></span></h3>
+
+        <pre class="terminal" aria-label="After cleaning summary">
+============================================================
+Shape: (2274, 7)
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 2274 entries, 0 to 2273
+Data columns (total 7 columns):
+ #   Column      Non-Null Count  Dtype  
+---  ------      --------------  -----  
+ 0   Unnamed: 0  2274 non-null   int64  
+ 1   Date        2274 non-null   object 
+ 2   Open        2274 non-null   float64
+ 3   High        2274 non-null   float64
+ 4   Low         2274 non-null   float64
+ 5   Close       2274 non-null   float64
+ 6   Volume      2274 non-null   int64  
+dtypes: float64(4), int64(2), object(1)
+memory usage: 124.5+ KB
+
+Missing Values After Cleaning:
+Unnamed: 0    0
+Date          0
+Open          0
+High          0
+Low           0
+Close         0
+Volume        0
+dtype: int64
+        </pre>
+      </div>
+
+      <div class="meta" aria-label="First 10 rows after cleaning">
+        <h3>First 10 rows (After cleaning)</h3>
+        <pre style="margin:0;font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', monospace;font-size:13px;color:var(--text);white-space:pre-wrap;">
+See left panel table for the first 10 rows — identical to the 'Before' excerpt in this dataset (no dropped rows; only formatting/consistency cleaning applied).
+        </pre>
+      </div>
+
+      <div class="meta" aria-label="Columns list">
+        <h3>Columns</h3>
+        <div class="pill-list" role="list" aria-hidden="true">
+          <div class="pill">Unnamed: 0</div>
+          <div class="pill">Date</div>
+          <div class="pill">Open</div>
+          <div class="pill">High</div>
+          <div class="pill">Low</div>
+          <div class="pill">Close</div>
+          <div class="pill">Volume</div>
+        </div>
+      </div>
+    </aside>
+
+    <div class="note">Week 2 Assignment | Stock Forecasting Project | </div>
+  </div>
+
+  <!-- Optional small script to enable copy of terminal blocks (works without external libs) -->
+  <script>
+    // Add a simple "copy" on click behavior for terminal blocks (optional UX nicety)
+    document.querySelectorAll('.terminal').forEach(block => {
+      block.addEventListener('click', () => {
+        try {
+          const text = block.innerText;
+          navigator.clipboard.writeText(text);
+          block.style.boxShadow = '0 10px 30px rgba(0,0,0,0.6), 0 0 0 3px rgba(232,33,39,0.06)';
+          setTimeout(()=> block.style.boxShadow = '', 800);
+        } catch(e){ /* ignore on unsupported */ }
+      });
+    });
+  </script>
+</body>
+</html>
+
