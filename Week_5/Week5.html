@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Week 5 — Tesla Stock Regression Dashboard · Tesla Midnight Theme</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-0: #0a0a0a;
+      --accent-red: #e82127;
+      --accent-silver: #bfc5ca;
+      --text: #ffffff;
+      --glass: rgba(255,255,255,0.04);
+      --shadow: 0 6px 30px rgba(0,0,0,0.6);
+      --card-radius: 14px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background:
+        radial-gradient(1200px 600px at 10% 10%, rgba(232,33,39,0.03), transparent 6%),
+        linear-gradient(120deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00) 50%, rgba(255,255,255,0.025)),
+        var(--bg-0);
+      color: var(--text);
+      padding: 48px 40px 80px;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border: 1px solid rgba(255,255,255,0.03);
+      border-radius: var(--card-radius);
+      box-shadow: var(--shadow);
+      padding: 20px 28px;
+      backdrop-filter: blur(6px);
+      margin-bottom: 36px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .brand svg { width: 48px; height: 48px; }
+
+    .brand h1 {
+      font-family: 'Orbitron', sans-serif;
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: 1px;
+    }
+
+    .brand p {
+      color: var(--accent-silver);
+      font-size: 13px;
+      margin: 2px 0 0 0;
+    }
+
+    .header-meta {
+      text-align: right;
+      color: var(--accent-silver);
+      font-size: 13px;
+      margin-top: 6px;
+    }
+
+    main.dashboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+      gap: 30px;
+      align-items: start;
+    }
+
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015));
+      border-radius: var(--card-radius);
+      border: 1px solid rgba(255,255,255,0.04);
+      box-shadow: var(--shadow);
+      padding: 20px;
+      backdrop-filter: blur(6px);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      height: fit-content;
+    }
+
+    .card h2 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 15px;
+      color: var(--accent-silver);
+      margin-bottom: 12px;
+      letter-spacing: 0.8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card h2 span {
+      display: inline-block;
+      width: 40px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent-red), #ff6b6b);
+      border-radius: 6px;
+      opacity: 0.95;
+    }
+
+    .metrics {
+      display: flex;
+      justify-content: space-evenly;
+      align-items: center;
+      margin-top: 20px;
+      text-align: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .metric-box {
+      background: rgba(255,255,255,0.03);
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.05);
+      box-shadow: inset 0 0 12px rgba(232,33,39,0.05);
+      padding: 16px 22px;
+      width: 180px;
+    }
+
+    .metric-box h3 {
+      font-family: 'Orbitron', sans-serif;
+      color: var(--accent-red);
+      font-size: 18px;
+      margin-bottom: 4px;
+    }
+
+    .metric-box p {
+      font-size: 14px;
+      color: var(--accent-silver);
+    }
+
+    .graph-box {
+      width: 100%;
+      border-radius: 10px;
+      overflow: hidden;
+      background: var(--glass);
+      border: 1px solid rgba(255,255,255,0.05);
+      box-shadow: inset 0 0 12px rgba(232,33,39,0.05);
+      margin-top: 10px;
+    }
+
+    .graph-box img {
+      width: 100%;
+      display: block;
+      object-fit: contain;
+    }
+
+    footer {
+      margin-top: 60px;
+      text-align: center;
+      color: var(--accent-silver);
+      font-size: 13px;
+      opacity: 0.8;
+    }
+
+    @media (max-width: 768px) {
+      body { padding: 30px 20px; }
+      .dashboard { grid-template-columns: 1fr; }
+      .card { padding: 18px; }
+      header { flex-direction: column; gap: 10px; text-align: center; }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="brand">
+      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M30 10 L70 10 L50 60 Z" fill="#e82127"/>
+      </svg>
+      <div>
+        <h1>Week 5 — Regression Model Dashboard</h1>
+        <p>Tesla Stock Closing Price Prediction</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="dashboard">
+
+    <!-- Model Performance Graph -->
+    <div class="card">
+      <h2>Actual vs Predicted Closing Price <span></span></h2>
+      <div class="graph-box">
+        <img src="graph6.png" alt="Actual vs Predicted Tesla Stock Graph">
+      </div>
+    </div>
+
+    <!-- Performance Metrics -->
+    <div class="card">
+      <h2>📊 Model Performance <span></span></h2>
+      <div class="metrics">
+        <div class="metric-box">
+          <h3>1.00</h3>
+          <p>Mean Absolute Error (MAE)</p>
+        </div>
+        <div class="metric-box">
+          <h3>2.07</h3>
+          <p>Root Mean Squared Error (RMSE)</p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>Week 5  · Regression Model Performance</footer>
+</body>
+</html>
