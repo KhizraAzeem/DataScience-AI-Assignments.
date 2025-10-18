@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Week 6 — Model Accuracy Dashboard</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg-dark: #0a0a0a;
+      --bg-card: #141414;
+      --accent-red: #e82127;
+      --text: #ffffff;
+      --subtext: #bfc5ca;
+      --radius: 16px;
+      --shadow: 0 0 25px rgba(0, 0, 0, 0.8);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: radial-gradient(circle at center, #0f0f0f 0%, #050505 100%);
+      color: var(--text);
+      padding: 40px;
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Tesla pulse glow animation */
+    @keyframes electricPulse {
+      0%, 100% { box-shadow: 0 0 10px rgba(232, 33, 39, 0.3); }
+      50% { box-shadow: 0 0 25px rgba(232, 33, 39, 0.6); }
+    }
+
+    /* Tesla watermark (faint center logo effect) */
+    body::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 400px;
+      height: 400px;
+      background: url('https://upload.wikimedia.org/wikipedia/commons/e/e8/Tesla_logo.png') center/contain no-repeat;
+      opacity: 0.03;
+      filter: blur(1px);
+      pointer-events: none;
+    }
+
+     header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border: 1px solid rgba(255,255,255,0.03);
+      border-radius: var(--card-radius);
+      box-shadow: var(--shadow);
+      padding: 20px 28px;
+      backdrop-filter: blur(6px);
+      margin-bottom: 36px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .brand svg { width: 48px; height: 48px; }
+
+    .brand h1 {
+      font-family: 'Orbitron', sans-serif;
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: 1px;
+    }
+
+    .brand p {
+      color: var(--accent-silver);
+      font-size: 13px;
+      margin: 2px 0 0 0;
+    }
+
+    .header-meta {
+      text-align: right;
+      color: var(--accent-silver);
+      font-size: 13px;
+      margin-top: 6px;
+    }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 30px;
+      align-items: flex-start;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* red glowing line under each card heading */
+    .card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 4px;
+      width: 100%;
+      background: linear-gradient(90deg, rgba(232, 33, 39, 0.8), rgba(255, 90, 90, 0.3));
+      box-shadow: 0 0 10px rgba(232, 33, 39, 0.4);
+    }
+
+    .card h2 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.2rem;
+      color: var(--subtext);
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding-bottom: 8px;
+    }
+
+    .card h2 span {
+      display: inline-block;
+      width: 40px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent-red), #ff5f5f);
+      border-radius: 6px;
+      box-shadow: 0 0 8px rgba(232, 33, 39, 0.6);
+    }
+
+    img {
+      width: 100%;
+      border-radius: 10px;
+      box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.04);
+    }
+
+    .metrics {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    .metric {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: var(--radius);
+      text-align: center;
+      padding: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      transition: all 0.3s ease;
+    }
+
+    .metric:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 0 20px rgba(232, 33, 39, 0.3);
+    }
+
+    .metric h3 {
+      color: var(--accent-red);
+      font-size: 1.4rem;
+      margin-bottom: 8px;
+    }
+
+    .metric p {
+      color: var(--subtext);
+      font-size: 0.9rem;
+    }
+
+    pre {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 16px;
+      border-radius: 10px;
+      margin-top: 20px;
+      color: var(--subtext);
+      font-size: 0.9rem;
+      overflow-x: auto;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      color: var(--subtext);
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 900px) {
+      .dashboard {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="brand">
+      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M30 10 L70 10 L50 60 Z" fill="#e82127"/>
+      </svg>
+      <div>
+        <h1>Week 6 — Model Accuracy Dashboard</h1>
+        <p>Accuracy Comparison</p>
+      </div>
+    </div>
+  </header>
+  <main class="dashboard">
+  
+    
+    <!-- Metrics Card -->
+    <div class="card">
+      <h2>📊 Model Performance <span></span></h2>
+      <div class="metrics">
+        <div class="metric">
+          <h3>0.5121</h3>
+          <p>Logistic Regression Accuracy</p>
+        </div>
+        <div class="metric">
+          <h3>0.5077</h3>
+          <p>Random Forest Accuracy</p>
+        </div>
+      </div>
+
+      <h2 style="margin-top: 30px;">📋 Classification Report (Random Forest) <span></span></h2>
+      <pre>
+precision    recall  f1-score   support
+
+0       0.49      0.28      0.36       222
+1       0.51      0.72      0.60       233
+
+accuracy                           0.51       455
+macro avg       0.50      0.50      0.48       455
+weighted avg    0.50      0.51      0.48       455
+      </pre>
+    </div>
+  </main>
+
+  <footer>
+    Week 6 · Model Accuracy Visualization
+  </footer>
+</body>
+</html>
+
+
