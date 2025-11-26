@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Tesla Stock Dataset — Week 9 Report</title>
+
+  <!-- Google font for futuristic UI -->
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#0b0b0c;
+      --panel:#0f0f10;
+      --panel-2:#121213;
+      --muted:#b9b9bb;
+      --accent:#c62828; /* red */
+      --glass: rgba(255,255,255,0.03);
+      --card-border: rgba(255,255,255,0.03);
+      --soft-shadow: 0 6px 20px rgba(0,0,0,0.6);
+      --radius:18px;
+      --radius-sm:12px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: "Rajdhani", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: radial-gradient(1200px 600px at 10% 10%, rgba(255,255,255,0.012), transparent),
+                  linear-gradient(180deg, #070707 0%, #0b0b0c 100%);
+      color:#e6e6e6;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      padding:32px;
+    }
+
+    .container{
+      max-width:1200px;
+      margin:0 auto;
+      display:grid;
+      grid-template-columns: 1fr 360px;
+      gap:22px;
+    }
+
+    /* Header */
+    .header{
+      grid-column:1 / -1;
+      background: linear-gradient(180deg, rgba(255,255,255,0.014), rgba(255,255,255,0.01));
+      border-radius:28px;
+      padding:26px 28px;
+      display:flex;
+      align-items:center;
+      gap:18px;
+      border:1px solid rgba(255,255,255,0.03);
+      box-shadow: var(--soft-shadow);
+    }
+    .logo{
+      width:58px;
+      height:58px;
+      background: linear-gradient(135deg, rgba(198,40,40,0.15), rgba(0,0,0,0.15));
+      border-radius:12px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:var(--accent);
+      font-weight:700;
+      font-size:26px;
+      box-shadow: 0 6px 20px rgba(198,40,40,0.06) inset;
+      border:1px solid rgba(198,40,40,0.08);
+    }
+    .title{
+      display:flex;
+      flex-direction:column;
+    }
+    .title h1{
+      margin:0;
+      font-size:22px;
+      letter-spacing:0.6px;
+    }
+    .title p{ margin:2px 0 0 0; font-size:13px; color:var(--muted) }
+
+    /* Main left area */
+    .left {
+      display:flex;
+      flex-direction:column;
+      gap:22px;
+    }
+
+    /* Card style */
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.008));
+      border-radius: var(--radius);
+      padding:18px;
+      border:1px solid var(--card-border);
+      box-shadow: var(--soft-shadow);
+    }
+
+    /* Table card */
+    .table-card h3{
+      margin:0 0 8px 0;
+      color:#f2f2f2;
+      display:flex;
+      align-items:center;
+      gap:12px;
+      font-size:16px;
+    }
+    .table-wrap{
+      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.008));
+      border-radius:14px;
+      padding:14px;
+      border:1px solid rgba(255,255,255,0.02);
+    }
+    table{
+      width:100%;
+      border-collapse:collapse;
+      table-layout:auto;
+      font-size:13px;
+    }
+    thead th{
+      text-align:left;
+      padding:12px 10px;
+      color:var(--muted);
+      font-weight:600;
+      font-size:12px;
+      border-bottom:1px solid rgba(255,255,255,0.03);
+    }
+    tbody td{
+      padding:14px 10px;
+      border-bottom:1px dashed rgba(255,255,255,0.02);
+      color:#dcdcdc;
+    }
+    tbody tr:hover td{
+      background: linear-gradient(90deg, rgba(255,255,255,0.008), transparent);
+    }
+    .index-col{ width:44px; color:#9f9fa1; font-weight:700; }
+
+    /* dataset info / code blocks */
+    pre, code{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
+      font-size:12.2px;
+      line-height:1.45;
+      color:#d6d6d6;
+      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.007));
+      padding:14px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,0.02);
+      overflow:auto;
+      max-height:220px;
+    }
+
+    /* Right sidebar */
+    .right{
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+    }
+    .summary-title{ font-size:13px; color:var(--muted); margin-bottom:8px }
+    .stat{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      padding:14px;
+      border-radius:12px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.008), rgba(255,255,255,0.004));
+      border:1px solid rgba(255,255,255,0.02);
+    }
+    .stat h4{ margin:0; font-size:16px }
+    .stat p{ margin:0; color:var(--muted); font-size:12px }
+
+    .badge-list{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+    }
+    .badge{
+      padding:8px 12px;
+      border-radius:999px;
+      background: rgba(255,255,255,0.02);
+      border:1px solid rgba(255,255,255,0.02);
+      font-size:12px;
+      color:#ddd;
+    }
+
+    /* Descriptive summary */
+    .desc{
+      font-size:12px;
+      color:var(--muted);
+      display:flex;
+      gap:10px;
+      flex-direction:column;
+    }
+
+    /* small red accent */
+    .accent{
+      display:inline-block;
+      width:34px;
+      height:4px;
+      background:linear-gradient(90deg, var(--accent), #ff5b5b);
+      border-radius:8px;
+      margin-left:6px;
+    }
+
+    /* terminal */
+    .terminal{
+      margin-top:6px;
+      background: linear-gradient(180deg, rgba(2,2,2,0.55), rgba(20,20,20,0.55));
+      border-radius:14px;
+      padding:12px;
+      border:1px solid rgba(255,255,255,0.03);
+      box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+      color:#c9d1d9;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace;
+      font-size:12px;
+      line-height:1.45;
+      max-height:320px;
+      overflow:auto;
+    }
+    .term-top{ display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+    .term-dots{ display:flex; gap:6px }
+    .dot{ width:11px; height:11px; border-radius:50%; background:#ff5f56; box-shadow:0 0 8px rgba(255,95,86,0.12) }
+    .dot.yellow{ background:#ffbd2e; box-shadow:0 0 8px rgba(255,189,46,0.08) }
+    .dot.green{ background:#27c93f; box-shadow:0 0 8px rgba(39,201,63,0.08) }
+
+    /* small chart area */
+    .mini-chart{
+      width:100%;
+      height:120px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.006), transparent);
+      border-radius:10px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border:1px solid rgba(255,255,255,0.02);
+    }
+
+    /* responsive */
+    @media (max-width:1060px){
+      .container{ grid-template-columns: 1fr; padding:20px; }
+      .right{ order:2 }
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- header -->
+    <div class="header">
+      <div class="logo">▼</div>
+      <div class="title">
+        <h1>Tesla Stock Dataset</h1>
+        <p>Dataset preview · <span class="accent" style="vertical-align:middle"></span></p>
+      </div>
+    </div>
+
+    <!-- left main area -->
+    <div class="left">
+      <!-- Dataset information and mini chart -->
+      <div class="card">
+        <h3 style="margin:0 0 10px 0;">Dataset Information <span class="accent"></span></h3>
+
+        <div style="display:flex; gap:14px; align-items:flex-start; flex-wrap:wrap;">
+          <div style="flex:1; min-width:320px;">
+            <pre>
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 2274 entries, 0 to 2273
+Data columns (total 7 columns):
+ #   Column  Non-Null Count  Dtype
+---  ------  --------------  -----
+ 0   Unnamed  2274 non-null   int64
+ 1   Date     2274 non-null   object
+ 2   Open     2274 non-null   float64
+ 3   High     2274 non-null   float64
+ 4   Low      2274 non-null   float64
+ 5   Close    2274 non-null   float64
+ 6   Volume   2274 non-null   int64
+            </pre>
+          </div>
+
+          <div style="width:260px;">
+            <div style="margin-bottom:8px; font-size:13px; color:var(--muted)">Training Loss (mini)</div>
+            <div class="mini-chart" aria-hidden="true">
+              <!-- inline svg "loss curve" -->
+              <svg width="220" height="100" viewBox="0 0 220 100" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="g" x1="0" x2="1">
+                    <stop offset="0%" stop-color="#ff5b5b" stop-opacity="0.95"/>
+                    <stop offset="100%" stop-color="#c62828" stop-opacity="0.95"/>
+                  </linearGradient>
+                </defs>
+                <path d="M8,92 C30,76 50,62 70,50 90,40 110,34 130,28 150,24 170,22 190,20 210,18" fill="none" stroke="url(#g)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                <circle cx="8" cy="92" r="2.6" fill="#ff8a8a" />
+                <circle cx="210" cy="18" r="2.6" fill="#ff8a8a" />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Training output / terminal -->
+      <div class="card">
+        <h3 style="margin:0 0 10px 0;">Training Output <span class="accent"></span></h3>
+        <div class="terminal" role="log" aria-live="polite">
+          <div class="term-top"><div class="term-dots"><span class="dot"></span><span class="dot yellow"></span><span class="dot green"></span></div></div>
+
+<pre style="margin:0; color:#e6e6e6;">
+c:\Users\khizra\... \keras\layers\core\dense.py:92: UserWarning: Do not pass an `input_shape`/`input_dim` argument to a layer.
+When using Sequential models, prefer using an `Input(shape)` object as the first layer in the model instead.
+
+Epoch 1/50
+57/57 ━━━━━━━━━━━━━━━━━━━━━ 5s 14ms/step - loss: 22947.3945 - mae: 102.7664 - val_loss: 19756.0332 - val_mae: 91.9709
+Epoch 2/50
+57/57 ━━━━━━━━━━━━━━━━━━━━━ 1s 7ms/step - loss: 19689.9492 - mae: 91.6636 - val_loss: 14520.2686 - val_mae: 74.9460
+Epoch 3/50
+57/57 ━━━━━━━━━━━━━━━━━━━━━ 0s 7ms/step - loss: 11455.4951 - mae: 68.2521 - val_loss: 5466.5366 - val_mae: 47.3531
+Epoch 4/50
+57/57 ━━━━━━━━━━━━━━━━━━━━━ 0s 7ms/step - loss: 2483.9524 - mae: 31.3095 - val_loss: 351.9511 - val_mae: 11.8906
+Epoch 5/50
+57/57 ━━━━━━━━━━━━━━━━━━━━━ 0s 7ms/step - loss: 235.3723 - mae: 9.9351 - val_loss: 200.7150 - val_mae: 9.2913
+Epoch 6/50
+57/57 ━━━━━━━━━━━━━━━━━━━━━ 1s 9ms/step - loss: 201.6433 - mae: 9.3692 - val_loss: 184.2953 - val_mae: 9.0575
+...
+Epoch 33/50
+57/57 ━━━━━━━━━━━━━━━━━━━━━ 1s 14ms/step - loss: 15.2853 - mae: 2.8031 - val_loss: 18.2162 - val_mae: 2.8851
+Epoch 34/50
+47/57 ━━━━━━━━━━━━━━━━━━━━━ 0s 4ms/step - loss: 14.4787 - mae: 2.6967 &lt;Figure size 800x500 with 1 Axes&gt;
+</pre>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- right sidebar -->
+    <aside class="right">
+
+      <div class="card">
+        <div class="summary-title">Summary statistics</div>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <div class="stat"><div><p style="color:var(--muted); margin:0; font-size:12px">Rows</p><h4>2274</h4></div><div style="min-width:60px; text-align:right;"></div></div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <div class="stat"><div><p style="color:var(--muted); margin:0; font-size:12px">Open — mean</p><h4>103.49</h4></div></div>
+            <div class="stat"><div><p style="color:var(--muted); margin:0; font-size:12px">Close — mean</p><h4>103.46</h4></div></div>
+            <div class="stat"><div><p style="color:var(--muted); margin:0; font-size:12px">High — max</p><h4>414.50</h4></div></div>
+            <div class="stat"><div><p style="color:var(--muted); margin:0; font-size:12px">Low — min</p><h4>9.40</h4></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="summary-title">Columns</div>
+        <div class="badge-list">
+          <div class="badge">Unnamed: 0</div>
+          <div class="badge">Date</div>
+          <div class="badge">Open</div>
+          <div class="badge">High</div>
+          <div class="badge">Low</div>
+          <div class="badge">Close</div>
+          <div class="badge">Volume</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="summary-title">Descriptive summary (excerpt)</div>
+        <div class="desc">
+          <pre style="margin:0; background:transparent; border:none; padding:0; color:var(--muted)">
+count   2274.0
+mean    103.49
+std     111.13
+min     9.49
+25%     16.67
+50%     23.22
+75%     215.27
+max     414.50
+          </pre>
+        </div>
+      </div>
+
+    </aside>
+
+  </div>
+
+</body>
+</html>
