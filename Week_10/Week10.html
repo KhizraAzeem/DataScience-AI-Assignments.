@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Week 10 - Tesla LSTM Model</title>
+<style>
+    body {
+        background-color: #0d0d0d;
+        color: #ffffff;
+        font-family: "Poppins", sans-serif;
+        margin: 0;
+        padding: 20px;
+    }
+
+    h1 {
+        text-align: center;
+        color: #e50914;
+        margin-bottom: 30px;
+        letter-spacing: 1px;
+    }
+
+    .container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        align-items: start;
+    }
+
+    .card {
+        background-color: #1a1a1a;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 0 10px rgba(229, 9, 20, 0.2);
+        border: 1px solid #2b2b2b;
+    }
+
+    .card h2 {
+        color: #e50914;
+        margin-top: 0;
+        font-size: 22px;
+    }
+
+    .metrics-box {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 15px;
+    }
+
+    .metric {
+        background-color: #111;
+        padding: 12px;
+        border-radius: 8px;
+        border-left: 4px solid #e50914;
+    }
+
+    img {
+        width: 100%;
+        border-radius: 10px;
+        margin-top: 10px;
+    }
+
+    .log-box {
+        background-color: #111;
+        padding: 15px;
+        border-radius: 8px;
+        height: 300px;
+        overflow-y: scroll;
+        border-left: 4px solid #e50914;
+        white-space: pre-wrap;
+    }
+</style>
+</head>
+<body>
+
+<h1>Week 10 - Tesla Stock Forecasting (RNN / LSTM)</h1>
+
+<div class="container">
+
+    <!-- LEFT COLUMN -->
+    <div class="card">
+        <h2>Model Information</h2>
+        <p><b>Dataset File:</b> TeslaStock_Dataset_Cleaned.csv</p>
+        <p><b>Target Variable:</b> Close Price</p>
+        <p><b>Scaling:</b> MinMaxScaler (0 to 1)</p>
+        <p><b>Sequence Window:</b> 60 Days</p>
+        <p><b>LSTM Model:</b></p>
+        <ul>
+            <li>1 × LSTM Layer</li>
+            <li>1 × Dense Output Layer</li>
+            <li>Loss: MSE</li>
+            <li>Optimizer: Adam</li>
+            <li>Epochs Trained: 30</li>
+        </ul>
+
+        <h2>Performance Metrics</h2>
+        <div class="metrics-box">
+            <div class="metric"><b>MAE:</b> 59.12552610073348</div>
+            <div class="metric"><b>RMSE:</b> 66.9288224581427</div>
+        </div>
+
+        <h2>Training Logs</h2>
+        <div class="log-box">
+Epoch 1/30 - loss: 0.0137 - val_loss: 0.0199
+Epoch 2/30 - loss: 2.23e-04 - val_loss: 0.0132
+Epoch 3/30 - loss: 8.51e-05 - val_loss: 0.0100
+Epoch 4/30 - loss: 6.23e-05 - val_loss: 0.0087
+Epoch 5/30 - loss: 4.60e-05 - val_loss: 0.0086
+Epoch 6/30 - loss: 4.69e-05 - val_loss: 0.0063
+Epoch 7/30 - loss: 3.27e-05 - val_loss: 0.0057
+Epoch 8/30 - loss: 2.58e-05 - val_loss: 0.0054
+Epoch 9/30 - loss: 2.36e-05 - val_loss: 0.0040
+Epoch 10/30 - loss: 1.87e-05 - val_loss: 0.0036
+Epoch 11/30 - loss: 2.18e-05 - val_loss: 0.0027
+Epoch 12/30 - loss: 1.32e-05 - val_loss: 0.0028
+Epoch 13/30 - loss: 8.68e-06 - val_loss: 0.0024
+Epoch 14/30 - loss: 1.29e-05 - val_loss: 0.0022
+Epoch 15/30 - loss: 8.77e-06 - val_loss: 0.0017
+Epoch 16/30 - loss: 6.45e-06 - val_loss: 0.0015
+Epoch 17/30 - loss: 5.22e-06 - val_loss: 0.0013
+Epoch 18/30 - loss: 3.75e-06 - val_loss: 0.0014
+Epoch 19/30 - loss: 4.35e-06 - val_loss: 0.0013
+Epoch 20/30 - loss: 6.13e-06 - val_loss: 0.0013
+Epoch 21/30 - loss: 1.09e-05 - val_loss: 0.0012
+Epoch 22/30 - loss: 3.88e-06 - val_loss: 0.0010
+Epoch 23/30 - loss: 2.22e-06 - val_loss: 9.34e-04
+Epoch 24/30 - loss: 2.29e-06 - val_loss: 0.0010
+Epoch 25/30 - loss: 2.45e-06 - val_loss: 0.0010
+Epoch 26/30 - loss: 4.13e-06 - val_loss: 8.30e-04
+Epoch 27/30 - loss: 2.79e-06 - val_loss: 7.01e-04
+Epoch 28/30 - loss: 4.11e-06 - val_loss: 6.66e-04
+Epoch 29/30 - loss: 3.91e-06 - val_loss: 8.86e-04
+Epoch 30/30 - loss: 6.00e-06 - val_loss: 8.67e-04
+        </div>
+    </div>
+
+    <!-- RIGHT COLUMN: Graph Placeholder -->
+    <div class="card">
+        <h2>Prediction Graph</h2>
+        <p>Your graph will appear here:</p>
+        <img src="Week10.png" alt="Week 10 LSTM Graph" />
+    </div>
+</div>
+
+</body>
+</html>
